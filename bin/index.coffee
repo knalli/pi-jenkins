@@ -33,16 +33,16 @@ app.configure
           'event': 'plugin.jenkins.job.init'
           'plugins': ['say']
           'fn': (data) ->
-            @say.convertTextToSpeech text: "Project #{data.response.name} has state #{data.state ? 'unknown'}.", strategy: 'google', player: 'afplay'
+            @say.convertTextToSpeech text: "Project #{data.response.name} has state #{data.state ? 'unknown'}.", strategy: 'google', player: 'cli', playerArg: '/usr/bin/afplay'
         'two':
           'event': 'plugin.jenkins.job.state'
           'plugins': ['say']
           'fn': (data) ->
-            @say.convertTextToSpeech text: "Project #{data.response.name} has changed to #{data.state ? 'unknown'}.", strategy: 'google', player: 'afplay'
+            @say.convertTextToSpeech text: "Project #{data.response.name} has changed to #{data.state ? 'unknown'}.", strategy: 'google', player: 'cli', playerArg: '/usr/bin/afplay'
         'three':
           'event': 'plugin.jenkins.job.refresh'
           'plugins': ['say']
           'fn': (data) ->
-            @say.convertTextToSpeech text: "Project #{data.response.name} was refreshed.", strategy: 'google', player: 'afplay'
+            @say.convertTextToSpeech text: "Project #{data.response.name} was refreshed.", strategy: 'google', player: 'cli', playerArg: '/usr/bin/afplay'
 
 app.start()

@@ -38,9 +38,10 @@ class GoogleTtsStrategy
     deferred.promise
 
 
-class AfplayAudioPlayer
-  call: ({path}) ->
-    (Q.nfbind exec) "/usr/bin/afplay #{path}"
+class CliAudioPlayer
+  call: ({path, playerArg}) ->
+    cli = if typeof playerArg is 'function' then playerArg(path) else "#{playerArg} #{path}"
+    (Q.nfbind exec) cli
 
 class SayPlugin extends BasePlugin
 
@@ -55,7 +56,7 @@ class SayPlugin extends BasePlugin
     @emitter.on "plugin.#{@id}.onmessage", (options) =>
       @convertTextToSpeech options
 
-  convertTextToSpeech: ({text, strategy, converter, player}) ->
+  convertTextToSpeech: ({text, strategy, converter, player, playerArg}) ->
     promise = switch strategy
       when 'google'
         @log 'info', "plugin.#{@id}", "TTS Strategy '#{strategy}' will be used."
@@ -72,10 +73,10 @@ class SayPlugin extends BasePlugin
           path
     promise.then (path) =>
       switch player
-        when 'afplay'
+        when 'cli'
           @log 'info', "plugin.#{@id}", "TTS Player '#{player}' will be used."
-          p = new AfplayAudioPlayer
-          p.call path: path
+          p = new CliAudioPlayer
+          p.call path: path, playerArg: playerArg
         else
           throw new Error "Illegal player"
     promise
