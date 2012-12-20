@@ -9,18 +9,20 @@ class App extends Base
     super emitter
 
   configure: (config) ->
-    for own pluginId, plugin of @plugins
-      if config?.plugins[pluginId]?
-        plugin.configure config.plugins[pluginId]
+    for own pluginId, pluginConfig of config.plugins
+      plugin = @_loadPlugin pluginId
+      if plugin
+        plugin.configure pluginConfig
 
+  ###
+  Load implicitly a list of plugins.
+  ###
   loadPlugins: (ids...) ->
     for id in ids
-      @loadPlugin id
+      @_loadPlugin id
 
-  loadPlugin: (id) ->
-    if @plugins[id]
-      @log 'info', 'app.pluginloader', "Plugin #{id} was already loaded."
-      return
+  _loadPlugin: (id) ->
+    return @plugins[id] if @plugins[id]?
     path = "#{__dirname}/plugins/#{id}"
     app = @
     try
@@ -38,7 +40,9 @@ class App extends Base
     @log 'info', 'app.pluginloader', "Plugin #{id} loaded."
     pluginObject
 
-  getPlugin: (id) -> @plugins[id]
+  getPlugin: (id, tryToLoad = false) ->
+    @_loadPlugin id if !@plugins[id] and tryToLoad
+    @plugins[id]
 
   start: ->
     for own pluginId, plugin of @plugins

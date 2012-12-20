@@ -45,7 +45,7 @@ class BasePlugin extends Base
     @emitter.on listener.event, (args...) =>
       scope = app: @app
       for pluginId in listener.plugins
-        plugin = @app.getPlugin pluginId
+        plugin = @app.getPlugin pluginId, true
         unless plugin then @log 'error', "plugin.#{@getId()}", "The plugin #{pluginId} could not be found."
         scope[pluginId] = plugin
       listener.fn.apply scope, args

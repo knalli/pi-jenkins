@@ -18,8 +18,6 @@ app = new App(new EventEmitter2 wildcard: true)
     console.info "[Jenkins Job (#{data.event})] [#{data.response.name}] #{data.state}: #{data.response.number}"
 )()
 
-app.loadPlugins 'jenkins', 'say'
-
 app.configure
   'plugins':
     'jenkins':
