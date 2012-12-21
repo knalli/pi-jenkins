@@ -42,6 +42,11 @@ module.exports = function (grunt) {
         src: './lib',
         dest: './dist/lib',
         bare: true
+      },
+      test: {
+        src: './test',
+        dest: './dist/test',
+        bare: true
       }
     },
 
@@ -54,12 +59,16 @@ module.exports = function (grunt) {
     },
 
     test: {
-      files: ['test/**/*.js']
+      files: ['dist/test/**/*_test.js']
     },
 
     watch: {
       coffee: {
         files: './lib/**/*.coffee',
+        tasks: 'coffeeLint coffee'
+      },
+      test: {
+        files: './test/**/*.coffee',
         tasks: 'coffeeLint coffee'
       }
     },
@@ -96,5 +105,13 @@ module.exports = function (grunt) {
     'watch'
   ]);
 
+  grunt.registerTask('test2', [
+    'delete',
+    'coffeeLint',
+    'copy:bin',
+    'coffee:dist',
+    'coffee:test',
+    'test'
+  ]);
 
 };
