@@ -4,7 +4,9 @@ class BaseTaskAction
   app: null
   task: null
 
-  constructor: (@config, @app, @task)->
+  constructor: ->
+
+  configure: (@config, @app, @task) ->
 
   initialize: ->
 

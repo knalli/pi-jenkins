@@ -53,4 +53,4 @@ class SayPlugin extends BasePlugin
     promise
 
 
-exports.Plugin = SayPlugin
+exports.SayPlugin = SayPlugin

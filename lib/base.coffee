@@ -2,11 +2,12 @@ class Base
 
   emitter: null
 
-  constructor: (@emitter) ->
+  configure: (@emitter) ->
 
   getEmitter: -> @emitter
 
   emit: (event, data) ->
+    return unless @emitter
     data.event = event unless data.event
     @emitter.emit event, data
 

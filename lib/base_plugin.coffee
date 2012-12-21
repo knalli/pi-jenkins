@@ -10,8 +10,8 @@ class BasePlugin extends Base
 
   state: null
 
-  constructor: (@app) ->
-    super @app.getEmitter()
+  constructor: ->
+    @state = 'CREATED'
 
   getName: -> @name
 
@@ -31,7 +31,8 @@ class BasePlugin extends Base
   stop: ->
     @setState 'STOPPED'
 
-  configure: (config) ->
+  configure: (@app, config) ->
+    super @app.getEmitter()
     @addListeners config.listeners if config.listeners
     @setState 'CONFIGURED'
 

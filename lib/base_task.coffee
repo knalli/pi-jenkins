@@ -3,21 +3,23 @@
 
 class BaseTask
 
-  @config: null
-  @app: null
+  config: null
+  app: null
 
-  @actions: null
+  actions: null
 
-  constructor: (@config, @app) ->
+  constructor: ->
     @actions = []
 
-  initialize: ->
+  configure: (@app, @config) ->
     @_configureActions @config.actions if @config.actions?.length
-    action.initialize() for action in @actions
-    return
 
   _configureActions: (actions) ->
     @actions = (@_buildAction action for action in actions)
+    return
+
+  initialize: ->
+    action.initialize() for action in @actions
     return
 
   _buildAction: (config) ->

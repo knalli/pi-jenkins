@@ -22,9 +22,9 @@ class JenkinsPlugin extends BasePlugin
     mainLoopInterval: 1000
     maxWorkers: 3
 
-  configure: (config) ->
+  configure: (app, config) ->
+    super app, config
     @addWatchers config.watchers if config.watchers
-    super config
 
   start: ->
     @workerPool = chainGang.create workers: @options.maxWorkers
@@ -93,4 +93,4 @@ class JenkinsPlugin extends BasePlugin
     deferred.promise
 
 
-exports.Plugin = JenkinsPlugin
+exports.JenkinsPlugin = JenkinsPlugin

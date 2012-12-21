@@ -5,14 +5,15 @@
 class App extends Base
 
   plugins: null
+  pluginBuilder: null
 
   tasks: null
   taskBuilder: null
 
-  constructor: (emitter) ->
+  constructor: (@emitter) ->
     @plugins = {}
     @tasks = []
-    super emitter
+    @pluginBuilder = new BeanBuilder basePath: "#{__dirname}/plugins", suffix: 'plugin'
     @taskBuilder = new BeanBuilder basePath: "#{__dirname}/tasks", suffix: 'task'
 
   configure: (config) ->
@@ -28,6 +29,7 @@ class App extends Base
 
   _buildTask: (config) ->
     task = @taskBuilder.build config
+    task.configure @, config
     if config.event
       @getEmitter().on config.event, (data) -> task.run data
     return task
@@ -38,9 +40,9 @@ class App extends Base
 
   _configurePlugins: (plugins) ->
     for own pluginId, pluginConfig of plugins
+      pluginConfig.type = pluginId
       plugin = @_loadPlugin pluginId
-      if plugin
-        plugin.configure pluginConfig
+      plugin.configure @, pluginConfig
     return
 
   ###
@@ -52,22 +54,15 @@ class App extends Base
 
   _loadPlugin: (id) ->
     return @plugins[id] if @plugins[id]?
-    path = "#{__dirname}/plugins/#{id}"
-    app = @
-    try
-      {Plugin} = require path
-    catch e
-      @log 'warn', 'app.pluginloader', "The plugin #{id} does not exist."
-      return
-    pluginObject = new Plugin app
-    pluginObject.setState 'CREATED'
-    unless pluginObject
-      @log 'warn', 'app.pluginloader', "The plugin #{id} is not valid."
-      return
-    pluginObject.initialize()
-    @plugins[id] = pluginObject
-    @log 'info', 'app.pluginloader', "Plugin #{id} loaded."
-    pluginObject
+    plugin = @_buildPlugin type: id
+    @plugins[id] = plugin
+    plugin.initialize()
+    return plugin
+
+  _buildPlugin: (config) ->
+    plugin = @pluginBuilder.build config
+    plugin.configure @, config
+    return plugin
 
   getPlugin: (id, tryToLoad = false) ->
     @_loadPlugin id if !@plugins[id] and tryToLoad
