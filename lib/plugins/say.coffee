@@ -1,47 +1,15 @@
 http = require 'http'
-fs = require 'fs'
-temp = require 'temp'
 Q = require 'q'
 {exec} = require 'child_process'
 
 {BasePlugin} = require "#{__dirname}/../base_plugin"
+{Cli} = require "#{__dirname}/../helpers/cli"
+{TempFileHolder} = require "#{__dirname}/../helpers/temp_file_holder"
+{GoogleTranslatorTtsStrategy} = require "#{__dirname}/say/tts_strategies/google_translator"
 
 
-class TempFileHolder
+tempFileHolder = new TempFileHolder()
 
-  @store: (chunks) ->
-    tempOptions = suffix: '.mp3'
-    (Q.nfbind temp.open)(tempOptions).then (info) ->
-      fd = info.fd
-      for chunk in chunks
-        fs.writeSync fd, chunk, 0, chunk.length, null
-      fs.closeSync fd
-      info.path
-
-
-class GoogleTtsStrategy
-  call: ({language, text}) ->
-    deferred = Q.defer()
-    options =
-      hostname: 'translate.google.com'
-      port: 80
-      path: "/translate_tts?ie=UTF-8&tl=#{language}&q=#{encodeURIComponent text}"
-      method: 'GET'
-      headers:
-        'User-Agent': 'Mozilla'
-    request = http.request options, (response) =>
-      chunks = []
-      response.on 'data', (chunk) -> chunks.push chunk
-      response.on 'end', => Q.when(TempFileHolder.store chunks).then deferred.resolve, deferred.reject
-    request.on 'error', deferred.reject
-    request.end()
-    deferred.promise
-
-
-class CliAudioPlayer
-  call: ({path, playerArg}) ->
-    cli = if typeof playerArg is 'function' then playerArg(path) else "#{playerArg} #{path}"
-    (Q.nfbind exec) cli
 
 class SayPlugin extends BasePlugin
 
@@ -60,7 +28,7 @@ class SayPlugin extends BasePlugin
     promise = switch strategy
       when 'google'
         @log 'info', "plugin.#{@id}", "TTS Strategy '#{strategy}' will be used."
-        s = new GoogleTtsStrategy
+        s = new GoogleTranslatorTtsStrategy tempFileHolder
         s.call text: text, language: 'en'
       else
         throw new Error "Illegal strategy"
@@ -75,10 +43,13 @@ class SayPlugin extends BasePlugin
       switch player
         when 'cli'
           @log 'info', "plugin.#{@id}", "TTS Player '#{player}' will be used."
-          p = new CliAudioPlayer
-          p.call path: path, playerArg: playerArg
+          Cli.exec executable: playerArg, argument: path
+          path
         else
           throw new Error "Illegal player"
+    promise.then (path) =>
+      tempFileHolder.remove path if path
+      path
     promise
 
 
