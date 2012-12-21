@@ -77,6 +77,7 @@ class JenkinsPlugin extends BasePlugin
           name: json.fullDisplayName
           timestamp: json.timestamp
           culprits: (culprit.fullName for culprit in json.culprits)
+          changesets: (item for item in json.changeSet?.items)
         unless oldResponse
           watcher.response = newResponse
           @emit 'plugin.jenkins.job.init', state: newResponse.state, response: newResponse
