@@ -19,41 +19,42 @@ app = new App(new EventEmitter2 wildcard: true)
 )()
 
 app.configure
-  'plugins':
-    'jenkins':
-      'watchers':
-        'one':
-          'name': 'Jenkins Main Trunk'
-          'host': 'https://ci.jenkins-ci.org'
-          'path': '/view/Jenkins%20core/job/jenkins_main_trunk'
-          'build': 'lastBuild'
-          'interval': 60000
-      'listeners':
-        'one':
-          'event': 'plugin.jenkins.job.init'
-          'plugins': ['say']
-          'fn': (data) ->
-            @say.convertTextToSpeech
-              text: "Project #{data.response.name} has state #{data.state ? 'unknown'}."
-              strategy: 'google'
-              player: 'cli'
-              playerArg: MY_LOCAL_PLAYER
-        'two':
-          'event': 'plugin.jenkins.job.state'
-          'plugins': ['say']
-          'fn': (data) ->
-            @say.convertTextToSpeech
-              text: "Project #{data.response.name} has changed to #{data.state ? 'unknown'}."
-              strategy: 'google'
-              player: 'cli'
-              playerArg: MY_LOCAL_PLAYER
-        'three':
-          'event': 'plugin.jenkins.job.refresh'
-          'plugins': ['say']
-          'fn': (data) ->
-            @say.convertTextToSpeech text: "Project #{data.response.name} was refreshed."
-              strategy: 'google'
-              player: 'cli'
-              playerArg: MY_LOCAL_PLAYER
+  tasks: [(
+    event: 'plugin.jenkins.job.init'
+    actions: [(
+      type: 'BuildToSpeech'
+      language: 'en'
+      using: 'google,festival'
+    ), (
+      type: 'CombineAudio'
+      prefix: true
+      using: 'mp3'
+    ), (
+      type: 'Cli'
+      exec: MY_LOCAL_PLAYER
+    )]
+  )]
+  plugins:
+    jenkins:
+      watchers:
+        one:
+          name: 'Jenkins Main Trunk'
+          host: 'https://ci.jenkins-ci.org'
+          path: '/view/Jenkins%20core/job/jenkins_main_trunk'
+          build: 'lastBuild'
+          interval: 60000
+      listeners:
+        one:
+          event: 'plugin.jenkins.job.init'
+          plugins: ['say']
+          fn: (data) -> console.info "Project #{data.response.name} has currently state #{data.state}."
+        two:
+          event: 'plugin.jenkins.job.state'
+          plugins: ['say']
+          fn: (data) -> console.info "Project #{data.response.name} has changed to #{data.state}."
+        three:
+          event: 'plugin.jenkins.job.refresh'
+          plugins: ['say']
+          fn: (data) -> console.info "Project #{data.response.name} was refreshed."
 
 app.start()
