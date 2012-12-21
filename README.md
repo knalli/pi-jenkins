@@ -9,5 +9,5 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 _(Nothing yet)_
 
 ## License
-Copyright (c) 2012 knalli  
+Copyright (c) 2012 Jan Philipp
 Licensed under the MIT license.
