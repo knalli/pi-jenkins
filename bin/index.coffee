@@ -5,7 +5,7 @@
 
 MY_LOCAL_PLAYER = '/usr/bin/afplay'
 
-app = new App(new EventEmitter2 wildcard: true)
+app = new App(new EventEmitter2 wildcard: true, maxListeners: 50)
 
 # Logging
 (->
