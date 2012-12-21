@@ -75,6 +75,8 @@ class App extends Base
 
   getTasks: -> @tasks
 
+  getPlugins: -> (plugin for own pluginId, plugin of @plugins)
+
   start: ->
     for own pluginId, plugin of @plugins
       plugin.start()

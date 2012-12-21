@@ -5,7 +5,9 @@ fs = require 'fs'
 
 exports['App'] =
   setUp: (done) ->
-    @emitter = {on: -> console.info 'Event ON'}
+    @emitter =
+      on: ->
+      emit: ->
     @app = new App @emitter
     done()
 
@@ -64,5 +66,23 @@ exports['App'] =
     )]
     app.configure tasks: tasks
     test.equal app.getTasks().length, 1, 'List of configured tasks should contain exactly this task.'
+    test.done()
+
+  'Load a plugin': (test) ->
+    app = @app
+    test.equal app.getPlugins().length, 0, 'Number of configured plugins should be "0".'
+    app.loadPlugins 'say'
+    test.equal app.getPlugins().length, 1, 'Number of configured plugins should be "1".'
+    test.equal app.getPlugins()[0].getId(), 'say', 'The plugin should be "say".'
+    test.equal app.getPlugin('say').getId(), 'say', 'The plugin should be "say".'
+    test.done()
+
+  'Load a plugin (which does not exist)': (test) ->
+    app = @app
+    test.equal app.getPlugins().length, 0, 'Number of configured plugins should be "0".'
+    test.equal app.getPlugin('say'), null, 'The plugin should not be found.'
+    test.equal app.getPlugins().length, 0, 'Number of configured plugins should be "0".'
+    test.equal app.getPlugin('say', true).getId(), 'say', 'The plugin should be "say".'
+    test.equal app.getPlugins().length, 1, 'Number of configured plugins should be "1".'
     test.done()
 
