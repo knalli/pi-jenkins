@@ -11,7 +11,7 @@ class App extends Base
   taskBuilder: null
 
   constructor: (@emitter) ->
-    @plugins = {}
+    @plugins = []
     @tasks = []
     @pluginBuilder = new BeanBuilder basePath: "#{__dirname}/plugins", suffix: 'plugin'
     @taskBuilder = new BeanBuilder basePath: "#{__dirname}/tasks", suffix: 'task'
@@ -39,10 +39,10 @@ class App extends Base
     return
 
   _configurePlugins: (plugins) ->
-    for own pluginId, pluginConfig of plugins
-      pluginConfig.type = pluginId
+    for own pluginId, config of plugins
+      config.type = pluginId
       plugin = @_loadPlugin pluginId
-      plugin.configure @, pluginConfig
+      plugin.configure @, config
     return
 
   ###
@@ -52,10 +52,14 @@ class App extends Base
     for id in ids
       @_loadPlugin id
 
+  _findPluginsById: (id) ->
+    (plugin for plugin in @plugins when plugin.getId() is id)
+
   _loadPlugin: (id) ->
-    return @plugins[id] if @plugins[id]?
+    matchedPlugins = @_findPluginsById id
+    return if matchedPlugins?.length
     plugin = @_buildPlugin type: id
-    @plugins[id] = plugin
+    @plugins.push plugin
     plugin.initialize()
     return plugin
 
@@ -65,15 +69,17 @@ class App extends Base
     return plugin
 
   getPlugin: (id, tryToLoad = false) ->
-    @_loadPlugin id if !@plugins[id] and tryToLoad
-    @plugins[id]
+    @_loadPlugin(id) if tryToLoad and @_findPluginsById(id).length < 1
+    @_findPluginsById(id)[0]
 
   getTasks: -> @tasks
 
-  getPlugins: -> (plugin for own pluginId, plugin of @plugins)
+  getPlugins: -> @plugins
 
   start: ->
-    for own pluginId, plugin of @plugins
-      plugin.start()
+    plugin.start() for plugin in @plugins
+
+  stop: ->
+    plugin.stop() for plugin in @plugins
 
 exports.App = App
