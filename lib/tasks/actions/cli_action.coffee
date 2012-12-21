@@ -3,9 +3,6 @@
 
 class CliAction extends BaseTaskAction
 
-  constructor: (config, app, task)->
-    super config, app, task
-
   initialize: ->
     super()
 
