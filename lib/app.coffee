@@ -24,6 +24,7 @@ class App extends Base
   _configureTasks: (tasks) ->
     return unless tasks?.length
     @tasks = (@_buildTask task for task in tasks)
+    return
 
   _buildTask: (config) ->
     task = @taskBuilder.build config
@@ -33,12 +34,14 @@ class App extends Base
 
   _initializeTasks: ->
     task.initialize() for task in @tasks
+    return
 
   _configurePlugins: (plugins) ->
     for own pluginId, pluginConfig of plugins
       plugin = @_loadPlugin pluginId
       if plugin
         plugin.configure pluginConfig
+    return
 
   ###
   Load implicitly a list of plugins.
