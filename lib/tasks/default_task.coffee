@@ -6,7 +6,8 @@ class DefaultTask extends BaseTask
   constructor: (config, app) ->
     super config, app
 
-  run: ->
+  run: (scope)->
+    super scope
 
 
 exports.DefaultTask = DefaultTask

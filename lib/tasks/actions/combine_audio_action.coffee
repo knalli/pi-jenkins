@@ -6,5 +6,8 @@ class CombineAudioAction extends BaseTaskAction
   initialize: ->
     super()
 
+  run: (scope) ->
+    scope.lastResult
+
 
 exports.CombineAudioAction = CombineAudioAction

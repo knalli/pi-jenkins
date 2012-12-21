@@ -6,9 +6,12 @@ class BaseTaskAction
 
   constructor: ->
 
-  configure: (@config, @app, @task) ->
+  configure: (@app, @task, config) ->
 
   initialize: ->
+
+  run: (scope) ->
+    null
 
 
 exports.BaseTaskAction = BaseTaskAction

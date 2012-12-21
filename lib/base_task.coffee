@@ -1,18 +1,24 @@
+Q = require 'q'
+
+{Base} = require "#{__dirname}/base"
 {Wrappers} = require "#{__dirname}/helpers/wrappers"
+{BeanBuilder} = require "#{__dirname}/helpers/bean_builder"
 
 
-class BaseTask
+class BaseTask extends Base
 
-  config: null
   app: null
 
   actions: null
+  actionBuilder: null
 
   constructor: ->
     @actions = []
+    @actionBuilder = new BeanBuilder basePath: "#{__dirname}/tasks/actions", suffix: 'action'
 
-  configure: (@app, @config) ->
-    @_configureActions @config.actions if @config.actions?.length
+  configure: (@app, config) ->
+    super @app.getEmitter()
+    @_configureActions config.actions if config.actions?.length
 
   _configureActions: (actions) ->
     @actions = (@_buildAction action for action in actions)
@@ -23,16 +29,21 @@ class BaseTask
     return
 
   _buildAction: (config) ->
-    config.type = Wrappers.underscored(config.type ? 'default')
-    config.type = "#{config.type}_action" unless config.type[-7..] is '_action'
-    className = Wrappers.classify config.type
-    filePath = "#{__dirname}/tasks/actions/#{config.type}"
-    requiredScope = require filePath
-    Clazz = requiredScope[className]
-    throw new Error "Type #{className} was not found in file #{filePath}." unless Clazz
-    new Clazz config, @app, @
+    action = @actionBuilder.build config
+    action.configure @app, @, config
+    return action
 
-  run: ->
+  run: (data)->
+    promise = null
+    scope = data: data
+    for action in @actions
+      if promise
+        promise.then (lastResult) ->
+          scope.lastResult = lastResult
+          Q.when action.run scope
+      else
+        promise = Q.when action.run scope
+    return promise
 
 
 exports.BaseTask = BaseTask
