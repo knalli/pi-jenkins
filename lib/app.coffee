@@ -2,6 +2,7 @@
 {Wrappers} = require "#{__dirname}/helpers/wrappers"
 {BeanBuilder} = require "#{__dirname}/helpers/bean_builder"
 
+
 class App extends Base
 
   plugins: null
