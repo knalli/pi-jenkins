@@ -16,7 +16,8 @@ getResponseAsJSON = (response) ->
       json = JSON.parse data
       deferred.resolve json
     catch ex
-      deferred ex
+      deferred.reject ex
+    return
   deferred.promise
 
 exports.getResponseAsString = getResponseAsString
