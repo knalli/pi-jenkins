@@ -107,7 +107,7 @@ class JenkinsPlugin extends BasePlugin
     deferred = Q.defer()
     url = "#{watcher.host}#{if watcher.path[..0] is '/' then watcher.path else '/' + watcher.path}/#{watcher.build}/api/json"
     (if watcher.sslEnabled then https else http).get url, (response) =>
-      @log 'info', "plugin.#{@id}", "Response GET (Watcher ID #{watcher.id}): URL=#{url}"
+      @log 'info', "plugin.#{@id}", "Response GET #{url}..."
       debugger
       onSuccess = (json) =>
         oldResponse = watcher.response
@@ -121,12 +121,12 @@ class JenkinsPlugin extends BasePlugin
           changesets: (item for item in json.changeSet?.items?)
         unless oldResponse
           watcher.response = newResponse
-          @emit 'plugin.jenkins.job.init', state: newResponse.state, response: newResponse
+          @emit 'plugin.jenkins.job.init', state: newResponse.state, response: newResponse, jobName: watcher.name
         else if newResponse.state isnt 'BUILDING' and oldResponse.state isnt newResponse.state
           watcher.response = newResponse
-          @emit 'plugin.jenkins.job.state', state: newResponse.state, oldState: oldResponse.state, response: newResponse
+          @emit 'plugin.jenkins.job.state', state: newResponse.state, oldState: oldResponse.state, response: newResponse, jobName: watcher.name
         else
-          @emit 'plugin.jenkins.job.refresh', state: newResponse.state, response: newResponse
+          @emit 'plugin.jenkins.job.refresh', state: newResponse.state, response: newResponse, jobName: watcher.name
         deferred.resolve watcher
       onFailure = (err) ->
         deferred.reject err, watcher
