@@ -25,7 +25,7 @@ app.configure
       type: 'TextToSpeech'
       language: 'en'
       using: 'google,festival'
-      text : 'The Raspberry PI is ready!'
+      text: 'The Raspberry PI is ready!'
     ), (
       type: 'CombineAudio'
       prefix: true
@@ -34,8 +34,8 @@ app.configure
       type: 'Cli'
       exec: MY_LOCAL_PLAYER
     )]
-  ),(
-    event: 'plugin.jenkins.job.init'
+  ), (
+    event: 'plugin.jenkins.job.state'
     actions: [(
       type: 'BuildToSpeech'
       language: 'en'
@@ -51,25 +51,9 @@ app.configure
   )]
   plugins:
     jenkins:
-      watchers:
-        one:
-          name: 'Jenkins Main Trunk'
-          host: 'https://ci.jenkins-ci.org'
-          path: '/view/Jenkins%20core/job/jenkins_main_trunk'
-          build: 'lastBuild'
-          interval: 60000
-      listeners:
-        one:
-          event: 'plugin.jenkins.job.init'
-          plugins: ['say']
-          fn: (data) -> console.info "Project #{data.response.name} has currently state #{data.state}."
-        two:
-          event: 'plugin.jenkins.job.state'
-          plugins: ['say']
-          fn: (data) -> console.info "Project #{data.response.name} has changed to #{data.state}."
-        three:
-          event: 'plugin.jenkins.job.refresh'
-          plugins: ['say']
-          fn: (data) -> console.info "Project #{data.response.name} was refreshed."
+      autoDiscovery:
+        pattern: '.*'
+        host: 'http://localhost:8000'
+        jobDefaultInterval: 10000
 
 app.start()
