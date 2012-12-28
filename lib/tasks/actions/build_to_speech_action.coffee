@@ -10,7 +10,6 @@ class BuildToSpeechAction extends BaseTaskAction
 
   initialize: ->
     super()
-    @say = @app.getPlugin('say')
     @tts = new GoogleTranslatorTtsStrategy @tempFileHolder
 
   run: (scope) ->
