@@ -20,6 +20,21 @@ app = new App(new EventEmitter2 wildcard: true, maxListeners: 50)
 
 app.configure
   tasks: [(
+    event: 'app.started'
+    actions: [(
+      type: 'TextToSpeech'
+      language: 'en'
+      using: 'google,festival'
+      text : 'The Raspberry PI is ready!'
+    ), (
+      type: 'CombineAudio'
+      prefix: true
+      using: 'mp3'
+    ), (
+      type: 'Cli'
+      exec: MY_LOCAL_PLAYER
+    )]
+  ),(
     event: 'plugin.jenkins.job.init'
     actions: [(
       type: 'BuildToSpeech'

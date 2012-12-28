@@ -78,9 +78,13 @@ class App extends Base
   getPlugins: -> @plugins
 
   start: ->
+    @emit 'app.beforestart', numberOfPlugins: @plugins.length
     plugin.start() for plugin in @plugins
+    @emit 'app.started', numberOfPlugins: @plugins.length
 
   stop: ->
+    @emit 'app.beforestop', numberOfPlugins: @plugins.length
     plugin.stop() for plugin in @plugins
+    @emit 'app.stopped', numberOfPlugins: @plugins.length
 
 exports.App = App
