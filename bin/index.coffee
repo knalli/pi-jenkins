@@ -35,11 +35,29 @@ app.configure
       exec: MY_LOCAL_PLAYER
     )]
   ), (
+    event: 'plugin.jenkins.job.init'
+    actions: [(
+      type: 'BuildToSpeech'
+      language: 'en'
+      using: 'google,festival'
+    ), (
+      type: 'LogBuildTable'
+    ), (
+      type: 'CombineAudio'
+      prefix: true
+      using: 'mp3'
+    ), (
+      type: 'Cli'
+      exec: MY_LOCAL_PLAYER
+    )]
+  ), (
     event: 'plugin.jenkins.job.state'
     actions: [(
       type: 'BuildToSpeech'
       language: 'en'
       using: 'google,festival'
+    ), (
+      type: 'LogBuildTable'
     ), (
       type: 'CombineAudio'
       prefix: true
