@@ -4,27 +4,25 @@ timeago = require 'timeago'
 
 {BaseTaskAction} = require "#{__dirname}/../../base_task_action"
 
+table = []
 
 class LogBuildTableAction extends BaseTaskAction
 
-  table: null
-
   constructor: ->
     super()
-    @table = []
 
   run: (scope) ->
-    item = (item for item in @table when item.job is scope.data.jobName)[0]
+    item = (item for item in table when item.job is scope.data.jobName)[0]
     unless item
       item = job: scope.data.jobName
-      @table.push item
+      table.push item
     item.build = scope.data.response.number
     item.oldBuild = if scope.data.oldResponse then scope.data.oldResponse.number
     item.timestamp = scope.data.response.timestamp
     item.state = scope.data.response.state
     item.oldState = if scope.data.oldResponse then scope.data.oldResponse.state
     item.building = scope.data.response.building
-    @logTable @table
+    @logTable table
     scope.lastResult
 
   logTable: (table) ->
