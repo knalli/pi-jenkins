@@ -5,19 +5,24 @@
 
 class TextToSpeechAction extends BaseTaskAction
 
+  language: null
+
   constructor: ->
     @tempFileHolder = new TempFileHolder()
 
   configure: (app, task, config) ->
     super app, task, config
     @text = config.text
+    @language = config.language ? 'en'
 
   initialize: ->
     super()
     @tts = new GoogleTranslatorTtsStrategy @tempFileHolder
 
   run: (scope) ->
-    @tts.call text: "#{@text}", language: 'en'
+    @tts.call
+      text: "#{@text}"
+      language: @language
 
 
 exports.TextToSpeechAction = TextToSpeechAction
