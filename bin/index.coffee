@@ -1,6 +1,9 @@
 #!/usr/bin/env coffee
 
 {App} = require '../lib/app'
+{Cli} = require '../lib/helpers/cli'
+
+Q = require 'q'
 {EventEmitter2} = require 'eventemitter2'
 
 MY_LOCAL_PLAYER = '/usr/bin/afplay'
@@ -16,6 +19,15 @@ app = new App(new EventEmitter2 wildcard: true, maxListeners: 50)
 
   emitter.on 'plugin.jenkins.**', (data) ->
     console.info "[Jenkins Job (#{data.event})] [#{data.response.name}] #{data.state}: #{data.response.number}"
+)()
+
+# The internal Raspberry PI audio output channel clicks on output. This is a temporarily hack to fix this issue.
+(->
+  fn = ->
+    promise = Cli.exec executable: MY_LOCAL_PLAYER, argument: "#{__dirname}/../resources/blank_mp3_point1sec.mp3"
+    promise.then ->
+      setTimeout fn, 3000
+  setTimeout fn, 3000
 )()
 
 app.configure
