@@ -8,6 +8,7 @@ class Base
 
   emit: (event, data) ->
     return unless @emitter
+    data = {} unless data
     data.event = event unless data.event
     @emitter.emit event, data
 
