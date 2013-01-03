@@ -60,6 +60,8 @@ app.configure
     ), (
       type: 'LogBuildTable'
     ), (
+      type: 'JenkinsLights'
+    ), (
       type: 'CombineAudio'
       prefix: true
       using: 'mp3'
