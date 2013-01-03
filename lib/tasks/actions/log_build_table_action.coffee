@@ -23,7 +23,7 @@ class LogBuildTableAction extends BaseTaskAction
     item.oldState = if scope.data.oldResponse then scope.data.oldResponse.state
     item.building = scope.data.response.building
     @logTable table
-    scope.lastResult
+    @returnPreviousResult scope
 
   logTable: (table) ->
     console.log "Currently active job monitors"

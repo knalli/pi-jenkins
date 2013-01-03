@@ -10,8 +10,10 @@ class BaseTaskAction
 
   initialize: ->
 
+  returnPreviousResult: ({lastResult}) -> lastResult
+
   run: (scope) ->
-    null
+    @returnPreviousResult scope
 
 
 exports.BaseTaskAction = BaseTaskAction
