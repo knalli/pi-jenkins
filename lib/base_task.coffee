@@ -25,7 +25,8 @@ class BaseTask extends Base
     return
 
   initialize: ->
-    action.initialize() for action in @actions
+    for action in @actions
+      action.initialize()
     return
 
   _buildAction: (config) ->
@@ -38,9 +39,12 @@ class BaseTask extends Base
     scope = data: data
     for action in @actions
       if promise
-        promise.then (lastResult) ->
+        promise.then ((lastResult) ->
           scope.lastResult = lastResult
           Q.when action.run scope
+        ), ((err) =>
+          @log 'warn', 'task.base', "Action #{action} performed not well.", err
+        )
       else
         promise = Q.when action.run scope
     return promise
