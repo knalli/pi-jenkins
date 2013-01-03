@@ -34,6 +34,7 @@ class BeanBuilder
       @createObjectCallback Clazz, config
     else
       new Clazz
+    instance._idType = config.type
     # Shadow copy of this instance for singleton usage.
     if (@useSingletons or config.singleton)
       @instances[className] = instance
