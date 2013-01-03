@@ -51,9 +51,15 @@ class JenkinsPlugin extends BasePlugin
     #@workerPool.on 'finished', (name) => @log 'info', @name, "Watcher #{name} has been finished."
     #@workerPool.on 'finished', (job) => @log 'info', @name, "Watcher #{job.name} has been timed out."
     if @autoDiscoveryOptions
-      @discoverAllJobs(@autoDiscoveryOptions).then =>
+      @discoverAllJobs(@autoDiscoveryOptions).then (=>
         setInterval (=> @checkWatchers()), @options.mainLoopInterval
+        @emit 'plugin.jenkins.start.succeeded'
+      ), (=>
+        @log 'error', "plugin.#{@id}", 'The server is not available.'
+        @emit 'plugin.jenkins.start.failed'
+      )
     else
+      @emit 'plugin.jenkins.start.succeeded'
       setInterval (=> @checkWatchers()), @options.mainLoopInterval
     super()
 
@@ -64,8 +70,8 @@ class JenkinsPlugin extends BasePlugin
   discoverAllJobs: (options) ->
     deferred = Q.defer()
     url = "#{options.host}/api/json"
-    @log 'info', "plugin.#{@id}", "Starting auto discovery mode using pattern #{options.pattern} ad url #{url}..."
-    (if options.sslEnabled then https else http).get url, (response) =>
+    @log 'info', "plugin.#{@id}", "Starting auto discovery mode using pattern #{options.pattern} and url #{url}..."
+    ((if options.sslEnabled then https else http).get url, (response) =>
       onSuccess = (json) =>
         for job in json.jobs
           watcherConfig =
@@ -77,6 +83,7 @@ class JenkinsPlugin extends BasePlugin
           @_addWatcher watcherConfig
         deferred.resolve()
       Q.when(ResponseUtils.getResponseAsJSON response).then onSuccess, deferred.reject
+    ).on 'error', (e) -> deferred.reject e
     deferred.promise
 
   addWatchers: (watchers) ->
