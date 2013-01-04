@@ -27,11 +27,12 @@ app.configure
       type: 'TextToSpeech'
       language: 'en'
       using: 'google,festival'
-      text: config.onJenkinsStartSuccess
+      text: config.onJenkinsStartSuccessText
     ), (
       type: 'CombineAudio'
-      prefix: true
+      ffmpeg: config.ffmpeg
       using: 'mp3'
+      prependFile: config.onJenkinsStartSuccessAudio
     ), (
       type: 'Cli'
       exec: config.audioPlayer
@@ -42,11 +43,12 @@ app.configure
       type: 'TextToSpeech'
       language: 'en'
       using: 'google,festival'
-      text: config.onJenkinsStartFailure
+      text: config.onJenkinsStartFailureText
     ), (
       type: 'CombineAudio'
-      prefix: true
+      ffmpeg: config.ffmpeg
       using: 'mp3'
+      prependFile: config.onJenkinsStartFailureAudio
     ), (
       type: 'Cli'
       exec: config.audioPlayer
@@ -63,6 +65,7 @@ app.configure
       type: 'JenkinsLights'
     ), (
       type: 'CombineAudio'
+      ffmpeg: config.ffmpeg
       prefix: true
       using: 'mp3'
     ), (
@@ -79,6 +82,7 @@ app.configure
       type: 'LogBuildTable'
     ), (
       type: 'CombineAudio'
+      ffmpeg: config.ffmpeg
       prefix: true
       using: 'mp3'
     ), (

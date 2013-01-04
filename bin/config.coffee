@@ -1,7 +1,10 @@
 module.exports =
   audioPlayer: '/usr/bin/afplay'
-  onJenkinsStartSuccess : 'Jenkins server will now be monitored! Go - go - go!'
-  onJenkinsStartFailure : 'The Jenkins server cannot be found - Sorry dudes.'
+  ffmpeg: '/opt/local/bin/ffmpeg'
+  onJenkinsStartSuccessText: 'Jenkins server will now be monitored! Go - go - go!'
+  onJenkinsStartSuccessAudio: 'resources/win31.mp3'
+  onJenkinsStartFailureText: 'The Jenkins server cannot be found - Sorry dudes.'
+  onJenkinsStartFailureAudio: 'resources/zonk.mp3'
   jenkinsOptions:
     autoDiscovery:
       pattern: '.*'
