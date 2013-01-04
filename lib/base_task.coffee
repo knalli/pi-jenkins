@@ -35,17 +35,23 @@ class BaseTask extends Base
     return action
 
   run: (data) ->
+    ###
+      The internal index __idx ensure that the deferred scope can access the correct action item.
+      Otherwise, the "current" action object is eventually not the scope's current one.
+    ###
     promise = null
     scope = data: data
     for action in @actions
       if promise
-        promise = promise.then ((lastResult) ->
+        promise = promise.then ((lastResult) =>
           scope.lastResult = lastResult
-          Q.when action.run scope
+          scope.__idx++
+          Q.when @actions[scope.__idx].run scope
         ), ((err) =>
-          @log 'warn', 'task.base', "Action #{action} performed not well.", err
+          @log 'warn', 'task.base', "Action #{@actions[scope.__idx]} performed not well: #{err}"
         )
       else
+        scope.__idx = 0
         promise = Q.when action.run scope
     return promise
 
