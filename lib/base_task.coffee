@@ -34,12 +34,12 @@ class BaseTask extends Base
     action.configure @app, @, config
     return action
 
-  run: (data)->
+  run: (data) ->
     promise = null
     scope = data: data
     for action in @actions
       if promise
-        promise.then ((lastResult) ->
+        promise = promise.then ((lastResult) ->
           scope.lastResult = lastResult
           Q.when action.run scope
         ), ((err) =>
