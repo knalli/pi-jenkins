@@ -1,4 +1,4 @@
-# pi-jenkins
+# pi-jenkins [![Dependency Status](https://gemnasium.com/knalli/pi-jenkins.png)](https://gemnasium.com/knalli/pi-jenkins)
 
 The best project ever.
 
