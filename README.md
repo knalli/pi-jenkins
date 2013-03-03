@@ -1,4 +1,4 @@
-# pi-jenkins [![Dependency Status](https://gemnasium.com/knalli/pi-jenkins.png)](https://gemnasium.com/knalli/pi-jenkins)
+# pi-jenkins [![Dependency Status](https://gemnasium.com/knalli/pi-jenkins.png)](https://gemnasium.com/knalli/pi-jenkins) [![Code Climate](https://codeclimate.com/github/knalli/pi-jenkins.png)](https://codeclimate.com/github/knalli/pi-jenkins)
 
 The best project ever.
 
